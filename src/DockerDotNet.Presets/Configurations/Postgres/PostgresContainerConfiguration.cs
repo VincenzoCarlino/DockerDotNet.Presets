@@ -1,6 +1,6 @@
 namespace DockerDotNet.Presets.Configurations.Postgres;
 
-#region
+    #region
 
 using System.Collections.Generic;
 using Docker.DotNet.Models;
@@ -27,32 +27,36 @@ public class PostgresContainerConfiguration : ContainerConfiguration
         DbPassword = dbPassword;
     }
 
-    public override IEnumerable<string> GetServiceEnvs()
-    {
-        return new List<string>
-        {
-            $"POSTGRES_USER={DbUser}",
-            $"POSTGRES_DB={DbName}",
-            $"POSTGRES_PASSWORD={DbPassword}"
-        };
-    }
-
-    public override IDictionary<string, IList<PortBinding>> GetPortBindings()
+    public override CreateContainerParameters GetCreateContainerParameters()
     {
         if (!IsPortAvailable(PortBinding)) PortBinding = GetAvailablePort();
 
-        return new Dictionary<string, IList<PortBinding>>
+        return new CreateContainerParameters
         {
+            Name = ContainerName,
+            Image = $"{ImageName}:{ImageTag}",
+            Env = new List<string>
             {
-                "5432/tcp",
-                new[]
+                $"POSTGRES_USER={DbUser}",
+                $"POSTGRES_DB={DbName}",
+                $"POSTGRES_PASSWORD={DbPassword}"
+            },
+            HostConfig = new HostConfig
+            {
+                PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    new PortBinding
                     {
-                        HostPort = PortBinding.ToString()
+                        "5432/tcp",
+                        new[]
+                        {
+                            new PortBinding
+                            {
+                                HostPort = PortBinding.ToString()
+                            }
+                        }
                     }
                 }
-            }
+            },
         };
     }
 }

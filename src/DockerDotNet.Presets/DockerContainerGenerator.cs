@@ -17,16 +17,7 @@ public class DockerContainerGenerator
 {
     public static async Task<DockerContainerResult> CreateContainerAsync(ContainerConfiguration containerConfiguration)
     {
-        var createContainerParameters = new CreateContainerParameters
-        {
-            Name = containerConfiguration.ContainerName,
-            Image = $"{containerConfiguration.ImageName}:{containerConfiguration.ImageTag}",
-            Env = containerConfiguration.GetServiceEnvs().ToList(),
-            HostConfig = new HostConfig
-            {
-                PortBindings = containerConfiguration.GetPortBindings()
-            }
-        };
+        var createContainerParameters = containerConfiguration.GetCreateContainerParameters();
 
         await CleanupRunningContainersAsync(containerConfiguration.ContainerName);
 

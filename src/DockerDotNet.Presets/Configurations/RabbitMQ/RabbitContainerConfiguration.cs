@@ -28,30 +28,35 @@ public class RabbitContainerConfiguration : ContainerConfiguration
         RabbitDefaultPassword = rabbitDefaultPassword;
     }
 
-    public override IEnumerable<string> GetServiceEnvs()
-    {
-        return new[]
-        {
-            $"RABBITMQ_DEFAULT_USER=${RabbitDefaultUser}",
-            $"RABBITMQ_DEFAULT_PASS=${RabbitDefaultPassword}"
-        };
-    }
 
-    public override IDictionary<string, IList<PortBinding>> GetPortBindings()
+    public override CreateContainerParameters GetCreateContainerParameters()
     {
         if (!IsPortAvailable(PortBinding)) PortBinding = GetAvailablePort();
 
-        return new Dictionary<string, IList<PortBinding>>
+        return new CreateContainerParameters
         {
+            Name = ContainerName,
+            Image = $"{ImageName}:{ImageTag}",
+            Env = new[]
             {
-                "5672/tcp",
-                new[]
+                $"RABBITMQ_DEFAULT_USER=${RabbitDefaultUser}",
+                $"RABBITMQ_DEFAULT_PASS=${RabbitDefaultPassword}"
+            },
+            HostConfig = new HostConfig
+            {
+                PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    new PortBinding
                     {
-                        HostPort = PortBinding.ToString()
+                        "5672/tcp",
+                        new[]
+                        {
+                            new PortBinding
+                            {
+                                HostPort = PortBinding.ToString()
+                            }
+                        }
                     }
-                }
+                },
             }
         };
     }

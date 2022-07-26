@@ -27,8 +27,8 @@ public abstract class ContainerConfiguration
         PortBinding = portBinding;
     }
 
-    public abstract IEnumerable<string> GetServiceEnvs();
-    public abstract IDictionary<string, IList<PortBinding>> GetPortBindings();
+    // public abstract IEnumerable<string> GetServiceEnvs();
+    // public abstract IDictionary<string, IList<PortBinding>> GetPortBindings();
 
     public static bool IsPortAvailable(int port)
     {
@@ -50,4 +50,6 @@ public abstract class ContainerConfiguration
         tcpListener.Stop();
         return port;
     }
+
+    public abstract CreateContainerParameters GetCreateContainerParameters();
 }
