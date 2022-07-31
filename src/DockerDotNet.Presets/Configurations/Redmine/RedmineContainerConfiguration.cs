@@ -13,6 +13,7 @@ public class RedmineContainerConfiguration : ContainerConfiguration
     public string DbPassword { get; }
     public string DbName { get; }
     public string DbHost { get; }
+    public int DbPort { get; }
     public string RedmineSecretKeyBase { get; }
     public RedmineContainerConfiguration(string containerName,
                                          string? volumeName,
@@ -23,13 +24,15 @@ public class RedmineContainerConfiguration : ContainerConfiguration
                                          string dbPassword,
                                          string dbName,
                                          string redmineSecretKeyBase,
-                                         string dbHost) : base(containerName, volumeName, imageName, imageTag, portBinding)
+                                         string dbHost,
+                                         int dbPort) : base(containerName, volumeName, imageName, imageTag, portBinding)
     {
         DbUsername = dbUsername;
         DbPassword = dbPassword;
         DbName = dbName;
         RedmineSecretKeyBase = redmineSecretKeyBase;
         DbHost = dbHost;
+        DbPort = dbPort;
     }
 
     public override CreateContainerParameters GetCreateContainerParameters()
@@ -47,7 +50,8 @@ public class RedmineContainerConfiguration : ContainerConfiguration
                 $"REDMINE_DB_USERNAME={DbUsername}",
                 $"REDMINE_DB_PASSWORD={DbPassword}",
                 $"REDMINE_DB_DATABASE={DbName}",
-                $"REDMINE_SECRET_KEY_BASE={RedmineSecretKeyBase}"
+                $"REDMINE_SECRET_KEY_BASE={RedmineSecretKeyBase}",
+                $"REDMINE_DB_PORT={DbPort}"
             },
             HostConfig = new HostConfig
             {

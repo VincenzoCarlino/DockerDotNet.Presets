@@ -39,8 +39,8 @@ public class RabbitContainerConfiguration : ContainerConfiguration
             Image = $"{ImageName}:{ImageTag}",
             Env = new[]
             {
-                $"RABBITMQ_DEFAULT_USER=${RabbitDefaultUser}",
-                $"RABBITMQ_DEFAULT_PASS=${RabbitDefaultPassword}"
+                $"RABBITMQ_DEFAULT_USER={RabbitDefaultUser}",
+                $"RABBITMQ_DEFAULT_PASS={RabbitDefaultPassword}"
             },
             HostConfig = new HostConfig
             {

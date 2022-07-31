@@ -44,7 +44,18 @@ public class DockerContainerGenerator
 
         if (!result) throw new Exception("Failing on creating container");
 
+
         return new DockerContainerResult(container.ID, containerConfiguration.PortBinding);
+    }
+
+    public static async Task DropContainerById(string containerId)
+    {
+        var dockerClient = GetDockerClient();
+
+        await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters()).ConfigureAwait(false);
+        await dockerClient.Containers
+            .RemoveContainerAsync(containerId, new ContainerRemoveParameters {RemoveVolumes = true, Force = true})
+            .ConfigureAwait(false);
     }
 
     private static async Task CleanupRunningContainersAsync(string containerName)
@@ -61,6 +72,7 @@ public class DockerContainerGenerator
                 name => name.Contains(containerName)
             )
         ).ToList();
+        
 
         foreach (var container in containersToDelete)
         {
