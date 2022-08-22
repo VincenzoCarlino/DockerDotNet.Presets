@@ -1,23 +1,30 @@
 namespace DockerDotNet.Presets;
 
-    #region
+using Docker.DotNet;
+using Docker.DotNet.Models;
+
+using DockerDotNet.Presets.Configurations;
+using DockerDotNet.Presets.DTO;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Docker.DotNet;
-using Docker.DotNet.Models;
-using DockerDotNet.Presets.Configurations;
-using DockerDotNet.Presets.DTO;
-
-#endregion
 
 public class DockerContainerGenerator
 {
+    /// <summary>
+    /// Creates a docker container using the passed configuration.
+    /// </summary>
+    /// <param name="containerConfiguration"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception">If we are unable to create the container</exception>
     public static async Task<DockerContainerResult> CreateContainerAsync(ContainerConfiguration containerConfiguration)
     {
-        var existingContainer = await GetContainerAsync(containerConfiguration.ContainerName).ConfigureAwait(false);
+        var existingContainer = await FindContainerAsync(
+                GetDockerContainerRequest.CreateByContainerName(containerConfiguration.ContainerName)
+            )
+            .ConfigureAwait(false);
 
         if (existingContainer is not null && existingContainer.Ports.Any(x => x.PublicPort == containerConfiguration.PortBinding))
         {
@@ -40,9 +47,9 @@ public class DockerContainerGenerator
         var dockerClient = GetDockerClient();
 
         await dockerClient.Images.CreateImageAsync(new ImagesCreateParameters
-            {
-                FromImage = $"{containerConfiguration.ImageName}:{containerConfiguration.ImageTag}"
-            }, null, new Progress<JSONMessage>())
+        {
+            FromImage = $"{containerConfiguration.ImageName}:{containerConfiguration.ImageTag}"
+        }, null, new Progress<JSONMessage>())
             .ConfigureAwait(false);
 
         var container = await dockerClient.Containers.CreateContainerAsync(createContainerParameters).ConfigureAwait(false);
@@ -55,7 +62,12 @@ public class DockerContainerGenerator
         return new DockerContainerResult(container.ID, containerConfiguration.PortBinding);
     }
 
-    private static async Task<ContainerListResponse?> GetContainerAsync(string containerName)
+    /// <summary>
+    /// Get the container requested if founded otherwise it returns null.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public static async Task<ContainerListResponse?> FindContainerAsync(GetDockerContainerRequest request)
     {
         var dockerClient = GetDockerClient();
 
@@ -64,20 +76,33 @@ public class DockerContainerGenerator
                 new ContainersListParameters()
             ).ConfigureAwait(false);
 
-        return runningContainers.FirstOrDefault(
-            container => container.Names.Any(
-                name => name.Contains(containerName)
-            )
-        );
+        if (request.ContainerName is not null)
+            return runningContainers.FirstOrDefault(
+                container => container.Names.Any(
+                    name => name.Contains(request.ContainerName)
+                )
+            );
+
+        if (request.ContainerId is not null)
+            return runningContainers.FirstOrDefault(
+                container => container.ID == request.ContainerId
+            );
+
+        return null;
     }
 
+    /// <summary>
+    /// Drop the container with the id passed.
+    /// </summary>
+    /// <param name="containerId"></param>
+    /// <returns></returns>
     public static async Task DropContainerById(string containerId)
     {
         var dockerClient = GetDockerClient();
 
         await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters()).ConfigureAwait(false);
         await dockerClient.Containers
-            .RemoveContainerAsync(containerId, new ContainerRemoveParameters {RemoveVolumes = true, Force = true})
+            .RemoveContainerAsync(containerId, new ContainerRemoveParameters { RemoveVolumes = true, Force = true })
             .ConfigureAwait(false);
     }
 
@@ -101,7 +126,7 @@ public class DockerContainerGenerator
         {
             await dockerClient.Containers.StopContainerAsync(container.ID, new ContainerStopParameters()).ConfigureAwait(false);
             await dockerClient.Containers
-                .RemoveContainerAsync(container.ID, new ContainerRemoveParameters {RemoveVolumes = true, Force = true})
+                .RemoveContainerAsync(container.ID, new ContainerRemoveParameters { RemoveVolumes = true, Force = true })
                 .ConfigureAwait(false);
         }
     }

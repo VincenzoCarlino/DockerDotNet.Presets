@@ -1,7 +1,8 @@
 namespace DockerDotNet.Presets.Configurations.Postgres;
 
-using System.Collections.Generic;
 using Docker.DotNet.Models;
+
+using System.Collections.Generic;
 
 public class PostgisContainerConfiguration : ContainerConfiguration
 {
@@ -10,13 +11,17 @@ public class PostgisContainerConfiguration : ContainerConfiguration
     public string DbPassword { get; }
 
     public PostgisContainerConfiguration(string dbName,
-                                         string dbUser,
-                                         string dbPassword,
-                                         string containerName,
-                                         string? volumeName,
-                                         string imageTag,
-                                         int portBinding)
-        : base(containerName, volumeName, "postgis/postgis", imageTag, portBinding)
+        string dbUser,
+        string dbPassword,
+        string containerName,
+        string? volumeName,
+        string imageTag,
+        int portBinding)
+        : base(containerName,
+            volumeName,
+            "postgis/postgis",
+            imageTag,
+            portBinding)
     {
         DbName = dbName;
         DbUser = dbUser;

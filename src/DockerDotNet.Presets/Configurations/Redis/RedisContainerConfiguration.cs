@@ -1,11 +1,19 @@
 namespace DockerDotNet.Presets.Configurations.Redis;
 
-using System.Collections.Generic;
 using Docker.DotNet.Models;
+
+using System.Collections.Generic;
 
 public class RedisContainerConfiguration : ContainerConfiguration
 {
-    public RedisContainerConfiguration(string containerName, string? volumeName, string imageName, string imageTag, int portBinding) : base(containerName, volumeName, imageName, imageTag, portBinding)
+    public RedisContainerConfiguration(string containerName,
+        string? volumeName,
+        string imageTag,
+        int portBinding) : base(containerName,
+            volumeName,
+            "redis",
+            imageTag,
+            portBinding)
     {
     }
 
@@ -17,7 +25,7 @@ public class RedisContainerConfiguration : ContainerConfiguration
         {
             Name = ContainerName,
             Image = $"{ImageName}:{ImageTag}",
-            Cmd = new List<string>(){"redis-server"},
+            Cmd = new List<string>() { "redis-server" },
             HostConfig = new HostConfig
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>

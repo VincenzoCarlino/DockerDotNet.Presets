@@ -1,14 +1,10 @@
 namespace DockerDotNet.Presets.Configurations;
 
-#region
+using Docker.DotNet.Models;
 
-using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using Docker.DotNet.Models;
-
-#endregion
 
 public abstract class ContainerConfiguration
 {
@@ -18,7 +14,11 @@ public abstract class ContainerConfiguration
     public string ImageTag { get; }
     public int PortBinding { get; protected set; }
 
-    protected ContainerConfiguration(string containerName, string? volumeName, string imageName, string imageTag, int portBinding)
+    protected ContainerConfiguration(string containerName,
+        string? volumeName,
+        string imageName,
+        string imageTag,
+        int portBinding)
     {
         ContainerName = containerName;
         VolumeName = volumeName;
@@ -26,9 +26,6 @@ public abstract class ContainerConfiguration
         ImageTag = imageTag;
         PortBinding = portBinding;
     }
-
-    // public abstract IEnumerable<string> GetServiceEnvs();
-    // public abstract IDictionary<string, IList<PortBinding>> GetPortBindings();
 
     public static bool IsPortAvailable(int port)
     {
@@ -46,7 +43,7 @@ public abstract class ContainerConfiguration
     {
         var tcpListener = new TcpListener(IPAddress.Loopback, 0);
         tcpListener.Start();
-        var port = ((IPEndPoint) tcpListener.LocalEndpoint).Port;
+        var port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
         tcpListener.Stop();
         return port;
     }

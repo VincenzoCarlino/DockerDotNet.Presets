@@ -1,31 +1,30 @@
 namespace DockerDotNet.Presets.Configurations.Postgres;
 
-    #region
-
-using System.Collections.Generic;
 using Docker.DotNet.Models;
 
-#endregion
+using System.Collections.Generic;
 
 public class RabbitContainerConfiguration : ContainerConfiguration
 {
     public string RabbitDefaultUser { get; }
     public string RabbitDefaultPassword { get; }
+    public string RabbitVHost { get; }
 
     public RabbitContainerConfiguration(string containerName,
-                                        string? volumeName,
-                                        string imageTag,
-                                        int portBinding,
-                                        string rabbitDefaultUser,
-                                        string rabbitDefaultPassword) : base(
-        containerName,
-        volumeName,
-        "rabbitmq",
-        imageTag,
-        portBinding)
+        string? volumeName,
+        string imageTag,
+        int portBinding,
+        string rabbitDefaultUser,
+        string rabbitDefaultPassword,
+        string rabbitVHost) : base(containerName,
+            volumeName,
+            "rabbitmq",
+            imageTag,
+            portBinding)
     {
         RabbitDefaultUser = rabbitDefaultUser;
         RabbitDefaultPassword = rabbitDefaultPassword;
+        RabbitVHost = rabbitVHost;
     }
 
 
@@ -40,7 +39,8 @@ public class RabbitContainerConfiguration : ContainerConfiguration
             Env = new[]
             {
                 $"RABBITMQ_DEFAULT_USER={RabbitDefaultUser}",
-                $"RABBITMQ_DEFAULT_PASS={RabbitDefaultPassword}"
+                $"RABBITMQ_DEFAULT_PASS={RabbitDefaultPassword}",
+                $"RABBITMQ_DEFAULT_VHOST={RabbitVHost}"
             },
             HostConfig = new HostConfig
             {

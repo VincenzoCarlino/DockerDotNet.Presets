@@ -1,23 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
-        <IsPackable>false</IsPackable>
+		<WarningsAsErrors>CS8600;CS8601;CS8602;CS8603;CS8604;CS8613;CS8614;CS8619;CS8620;CS8622;CS8625;CS8629;CS8633,CS8767</WarningsAsErrors>
+		<IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
-        <PackageReference Include="NUnit" Version="3.13.3"/>
-        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
-        <PackageReference Include="NUnit.Analyzers" Version="3.3.0"/>
-        <PackageReference Include="coverlet.collector" Version="3.1.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageReference Include="Npgsql" Version="6.0.6" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+        <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.48" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DockerDotNet.Presets\DockerDotNet.Presets.csproj"/>
+        <ProjectReference Include="..\DockerDotNet.Presets\DockerDotNet.Presets.csproj" />
     </ItemGroup>
 
 </Project>

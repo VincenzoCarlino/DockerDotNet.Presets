@@ -1,11 +1,8 @@
 namespace DockerDotNet.Presets.Configurations.Postgres;
 
-    #region
-
-using System.Collections.Generic;
 using Docker.DotNet.Models;
 
-#endregion
+using System.Collections.Generic;
 
 public class PostgresContainerConfiguration : ContainerConfiguration
 {
@@ -14,13 +11,17 @@ public class PostgresContainerConfiguration : ContainerConfiguration
     public string DbPassword { get; }
 
     public PostgresContainerConfiguration(string dbName,
-                                          string dbUser,
-                                          string dbPassword,
-                                          string containerName,
-                                          string? volumeName,
-                                          string imageTag,
-                                          int portBinding)
-        : base(containerName, volumeName, "postgres", imageTag, portBinding)
+        string dbUser,
+        string dbPassword,
+        string containerName,
+        string? volumeName,
+        string imageTag,
+        int portBinding)
+        : base(containerName,
+            volumeName,
+            "postgres",
+            imageTag,
+            portBinding)
     {
         DbName = dbName;
         DbUser = dbUser;
