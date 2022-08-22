@@ -17,6 +17,13 @@ public class DockerContainerGenerator
 {
     public static async Task<DockerContainerResult> CreateContainerAsync(ContainerConfiguration containerConfiguration)
     {
+        var existingContainer = await GetContainerAsync(containerConfiguration.ContainerName).ConfigureAwait(false);
+
+        if (existingContainer is not null && existingContainer.Ports.Any(x => x.PublicPort == containerConfiguration.PortBinding))
+        {
+            return new DockerContainerResult(existingContainer.ID, containerConfiguration.PortBinding);
+        }
+
         var createContainerParameters = containerConfiguration.GetCreateContainerParameters();
 
         await CleanupRunningContainersAsync(containerConfiguration.ContainerName);
@@ -48,6 +55,22 @@ public class DockerContainerGenerator
         return new DockerContainerResult(container.ID, containerConfiguration.PortBinding);
     }
 
+    private static async Task<ContainerListResponse?> GetContainerAsync(string containerName)
+    {
+        var dockerClient = GetDockerClient();
+
+        var runningContainers = await dockerClient.Containers
+            .ListContainersAsync(
+                new ContainersListParameters()
+            ).ConfigureAwait(false);
+
+        return runningContainers.FirstOrDefault(
+            container => container.Names.Any(
+                name => name.Contains(containerName)
+            )
+        );
+    }
+
     public static async Task DropContainerById(string containerId)
     {
         var dockerClient = GetDockerClient();
@@ -72,7 +95,7 @@ public class DockerContainerGenerator
                 name => name.Contains(containerName)
             )
         ).ToList();
-        
+
 
         foreach (var container in containersToDelete)
         {
@@ -90,7 +113,7 @@ public class DockerContainerGenerator
         var runningVolumes = await dockerClient.Volumes.ListAsync().ConfigureAwait(false);
 
         foreach (var volume in runningVolumes.Volumes.Where(volume => volume.Name.Contains(volumeName)))
-            await dockerClient.Volumes.RemoveAsync(volume.Name).ConfigureAwait(false);
+            await dockerClient.Volumes.RemoveAsync(volume.Name, true).ConfigureAwait(false);
     }
 
     private static DockerClient GetDockerClient()
